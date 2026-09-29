@@ -1,0 +1,10 @@
+{
+  "id": "2026-10-07",
+  "speaker": "Eneko Clemente",
+  "affiliation": "University of Zurich",
+  "title": "Saving Kermit: Dynamic Assortment Planning in a Boiling Market",
+  "abstract": "A retailer planning its assortment under evolving customers’ preferences faces a tension between retaining past sales information to guide its assortment selection (remembering) and discarding that information once it no longer reflects purchasing behavior (forgetting). Reminiscent of the boiling frog apologue, ignoring this tension may quietly erode the retailer’s revenue as the offered assortment becomes misaligned with customers’ preferences. We treat evolving customers’ preferences as a risk that the retailer plans for upfront. The retailer does so by first choosing a risk profile, namely a class of evolving customers’ preferences against which robustness is sought. Given this profile, robust planning becomes a regret-minimization problem relative to a clairvoyant retailer that knows how preferences evolve. We show that restart-based strategies achieve robustness when the restart timing is tied to the retailer’s risk profile. To manage the risk of evolving customers’ preferences, a retailer can first articulate a risk profile aligned with its risk appetite and tolerance for experimentation and then use that profile to decide when past sales information should be discarded. Alternatively, a retailer can reduce that planning burden by using more adaptive approaches. Doing so, however, comes at the cost of greater operational complexity.",
+  "date": "2026-10-07",
+  "start_time": "11:45",
+  "end_time": "13:00"
+}
