@@ -53,7 +53,7 @@
     }
     const event = { id, date: text(data.date), speaker: text(data.speaker), title: text(data.title) };
     if (!calendarDate(event.date) || !event.speaker || !event.title) throw new Error("Missing or invalid required seminar fields");
-    for (const field of ["affiliation", "abstract", "location"]) event[field] = text(data[field]);
+    for (const field of ["affiliation", "abstract", "bio", "location"]) event[field] = text(data[field]);
     for (const field of ["start_time", "end_time"]) {
       const value = text(data[field]);
       event[field] = /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value) ? value : "";
@@ -222,11 +222,19 @@
         abstract.append(element("h3", "", "Abstract"), body);
         article.append(abstract);
       }
+      if (upcoming && event.bio) {
+        const bio = element("section", "speaker-bio");
+        bio.append(element("h3", "", "About the speaker"));
+        for (const paragraph of event.bio.split(/\r\n|[\r\n\u2028\u2029]/).map(text).filter(Boolean)) {
+          bio.append(element("p", "", paragraph));
+        }
+        article.append(bio);
+      }
       content.replaceChildren(link("← All talks", "./", "back-link"), article);
       if (upcoming) {
         import("./rsvp.js").then(({ createRsvpControl }) => {
           if (!article.isConnected) return;
-          article.insertBefore(createRsvpControl(event.id), article.querySelector(".abstract"));
+          article.insertBefore(createRsvpControl(event.id), article.querySelector(".abstract") || article.querySelector(".speaker-bio"));
         }).catch(error => {
           console.warn("RSVP is unavailable.", error);
           if (article.isConnected) article.append(element("p", "notice", "RSVP is temporarily unavailable."));

@@ -401,7 +401,8 @@ main {
   font-size: 0.875rem;
 }
 
-.abstract {
+.abstract,
+.speaker-bio {
   margin-top: 2.25rem;
 }
 
@@ -462,7 +463,8 @@ main {
   cursor: not-allowed;
 }
 
-.abstract h3 {
+.abstract h3,
+.speaker-bio h3 {
   margin: 0 0 0.9rem;
   font-family: var(--metadata-font);
   font-size: 0.8125rem;
@@ -471,7 +473,8 @@ main {
   text-transform: uppercase;
 }
 
-.abstract p {
+.abstract p,
+.speaker-bio p {
   margin: 0;
   max-width: 68ch;
   font-size: 1.125rem;
@@ -479,8 +482,13 @@ main {
   white-space: pre-line;
 }
 
-.abstract p + p {
+.abstract p + p,
+.speaker-bio p + p {
   margin-top: 1.15em;
+}
+
+.speaker-bio p {
+  font-size: 1rem;
 }
 
 .abstract mjx-container {
