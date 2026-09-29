@@ -1,0 +1,9 @@
+{
+  "id": "2026-03-31",
+  "date": "2026-03-31",
+  "speaker": "Eugenio Cruz Ossa",
+  "title": "Competition Versus Complexity in Multiple-Selection Prophet Inequalities",
+  "abstract": "Competition complexity formalizes a compelling intuition: rather than refining the mechanism, how much additional competition is sufficient for a simple mechanism to compete with an optimal one? We begin the study of this question in multi-unit pricing for welfare maximization using prophet inequalities. An online decision-maker observes $m \\geq k$ nonnegative values drawn independently from a known distribution, may select up to $k$ of them, and aims to maximize the expected sum of selected values. The benchmark is a prophet who observes a sequence of length $n \\geq k$ and selects the $k$ largest values. We focus on the widely adopted class of single-threshold algorithms and fully characterize their $(1-\\varepsilon)$-competition complexity. Notably, our results reveal a sharp competition-induced phase transition: in the absence of competition, single-threshold algorithms are fundamentally limited to a $1-1/\\sqrt{2k\\pi}$ fraction of the prophet value, whereas even a $1\\%$ multiplicative increase beyond $n$ observations suffices to achieve a $1-\\exp(-\\Theta(k))$ fraction.\nAnother notable result happens when $k=1$: we show that the $(1-\\varepsilon)$-competition complexity is exactly $\\ln(1/\\varepsilon)$, fully resolving an open question by Brustle et al. [Math. Oper. Res. 2024]. Our analysis is based on infinite-dimensional linear programming and duality arguments.",
+  "affiliation": "Pontificia Universidad Católica de Chile",
+  "start_time": "11:45"
+}

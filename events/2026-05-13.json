@@ -1,0 +1,9 @@
+{
+  "id": "2026-05-13",
+  "date": "2026-05-13",
+  "speaker": "Mohammad Shahverdikondori",
+  "title": "Graph Learning is Suboptimal in Causal Bandits",
+  "abstract": "In many sequential decision-making problems, a natural approach is to first learn the causal structure of the system and then use it to choose better interventions. This talk shows that this can be the wrong strategy. For causal bandits with an unknown graph, identifying the causes of the reward and minimizing regret can conflict: the actions that reveal the graph may be costly, while good actions may reveal little. I will present results showing that graph learning is unnecessary, and sometimes suboptimal, for regret minimization, together with algorithms that directly search for good interventions and outperform graph learning baselines.",
+  "affiliation": "Chair BAN, EPFL",
+  "start_time": "11:45"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "2026-04-14",
+  "date": "2026-04-14",
+  "speaker": "Mengmeng Li",
+  "title": "Robust Markov Decision Processes on Continuous State Spaces",
+  "abstract": "We study infinite-horizon robust Markov decision processes (MDPs) on continuous state spaces with a structured rectangular ambiguity set. The proposed ambiguity set falls within the convex hull of unknown generating kernels. We utilize the dynamic formulation of the corresponding robust MDPs, and subsequently introduce a stochastic first-order method for robust policy evaluation. We establish its high probability convergence to the robust value function, which in turn leads to an \\bm{O(1/\\epsilon^2)} sample complexity. This high probability accuracy certificate is then used in an approximate policy iteration method that finds an \\bm{\\epsilon}-optimal policy with \\bm{O(1/\\epsilon^2)} samples. Notably, the proposed methods can be implemented independently of the size of the state space. The obtained sample complexities for both robust policy evaluation and optimization appear to be new for robust MDPs with continuous state spaces. Of independent interest, the proposed method is also directly applicable to zero-sum Markov games, which seems to strictly improve the existing sample complexities for continuous state spaces.",
+  "start_time": "12:00",
+  "affiliation": "Chair RAO, EPFL"
+}

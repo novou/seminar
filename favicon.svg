@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Common Ground</title>
+  <rect width="64" height="64" rx="12" fill="#f5f2e9"/>
+  <g transform="translate(0 6)">
+    <path d="M32 9 A17 17 0 0 1 32 39 A17 17 0 0 1 32 9Z" fill="#a35340" fill-opacity=".12"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round">
+      <circle cx="24" cy="24" r="17" stroke="#344d61"/>
+      <circle cx="40" cy="24" r="17" stroke="#b68b45"/>
+      <path d="M8 44H56" stroke="#626262" stroke-width="2"/>
+    </g>
+  </g>
+</svg>

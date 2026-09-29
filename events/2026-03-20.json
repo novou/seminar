@@ -1,0 +1,9 @@
+{
+  "id": "2026-03-20",
+  "date": "2026-03-20",
+  "speaker": "Jiechen Zhang",
+  "title": "Introduction to Optimal Stopping",
+  "abstract": "In this talk, I will introduce optimal stopping as the problem of deciding when to act under uncertainty in order to maximize expected reward. Using the classical secretary problem and prophet inequalities as core examples, I will show how simple threshold-based rules can achieve strong performance in online selection settings.\nI will also briefly connect these ideas to finance and to recent research on richer online decision models, including some of our work in the GO chair and related areas.",
+  "affiliation": "Chair GO, EPFL",
+  "start_time": "11:30"
+}

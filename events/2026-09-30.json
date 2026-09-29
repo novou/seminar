@@ -1,0 +1,11 @@
+{
+  "id": "2026-09-30",
+  "speaker": "Roy Sarkis",
+  "affiliation": "Chair SFI-LL, EPFL",
+  "title": "The Energy Transition Across Scales: From Solar Forecasting to Climate Policy",
+  "abstract": "Integrating renewable energy requires decisions that span minutes to decades, from anticipating solar production to designing climate policy. This talk brings together three complementary studies examining how forecasting, energy storage, and investment dynamics shape the operational and economic challenges of the energy transition.\nThe first study develops a deep learning approach that uses images from publicly available webcams to forecast solar irradiance, demonstrating how existing camera infrastructure can support accurate short-term predictions. The second translates these forecasts into operational and investment decisions for the EPFL campus, combining electricity procurement, battery scheduling, and storage sizing. The results show that better forecasts reduce electricity imbalance costs, while the economic value of storage depends on photovoltaic penetration, market participation, and technology costs. The third broadens the perspective to the economy as a whole, using a dynamic general equilibrium model to examine renewable investment, fossil resources, and climate policy. It shows that the pace of decarbonization strongly affects transition costs: rapid reductions in fossil energy use can outstrip the expansion of renewable capacity, making the existing composition of energy infrastructure a central constraint.\nTogether, these studies connect advances in solar forecasting with practical energy management and the design of climate policy.",
+  "date": "2026-09-30",
+  "start_time": "11:45",
+  "end_time": "13:00",
+  "location": ""
+}

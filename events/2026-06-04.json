@@ -1,0 +1,9 @@
+{
+  "id": "2026-06-04",
+  "date": "2026-06-04",
+  "speaker": "Philipp Schneider",
+  "title": "From Content to Behavior: Learning Models for Platform Governance",
+  "abstract": "Online platforms shape public discourse and collective behavior, yet their dynamics remain difficult to study and govern. Harmful content can spread rapidly, user activity is only partially observed, and organized campaigns can influence online discussions in ways that are difficult to detect from content alone. This talk develops a behavior-centric view of networked platforms by modeling the temporal dynamics of harmful content spread, behavioral similarities among users across communities, and coordinated activity patterns that can reveal information operations through activity rather than textual content alone. Across these settings, the talk argues that platform governance cannot rely solely on content labels, static networks, or aggregate engagement metrics. Instead, effective governance requires dynamic models that capture the temporal, behavioral, and adaptive structure of online activity.",
+  "affiliation": "Chair RAO, EPFL",
+  "start_time": "11:45"
+}
