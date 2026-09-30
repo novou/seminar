@@ -3,6 +3,12 @@
 
   const SERIES = "Common Ground";
   const TIME_ZONE = "Europe/Zurich";
+  const HOUR = 60 * 60 * 1000;
+  const archiveTimes = new Map();
+  const localClock = new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+  });
   const content = document.getElementById("content");
   function setupNavigation(detailMode) {
     const navigation = document.getElementById("page-navigation");
@@ -29,12 +35,44 @@
     return date;
   }
 
-  function zurichToday(now = new Date()) {
-    const parts = new Intl.DateTimeFormat("en", {
-      timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit"
-    }).formatToParts(now);
-    const part = type => parts.find(item => item.type === type).value;
-    return `${part("year").padStart(4, "0")}-${part("month")}-${part("day")}`;
+  function localWallTime(instant) {
+    const parts = localClock.formatToParts(instant);
+    const part = type => Number(parts.find(item => item.type === type).value);
+    const date = new Date(0);
+    date.setUTCFullYear(part("year"), part("month") - 1, part("day"));
+    date.setUTCHours(part("hour"), part("minute"), part("second"), 0);
+    return date.getTime();
+  }
+
+  function instantForWallTime(wallTime) {
+    // Find the actual timezone offset on both sides of a possible DST change.
+    const offsets = new Set([-36 * HOUR, 0, 36 * HOUR].map(delta => {
+      const sample = wallTime + delta;
+      return localWallTime(sample) - sample;
+    }));
+    const matches = [...offsets].map(offset => wallTime - offset)
+      .filter(instant => localWallTime(instant) === wallTime);
+    // A repeated autumn time uses its later occurrence, avoiding early archival.
+    return matches.length ? Math.max(...matches) : null;
+  }
+
+  function archiveAt(event) {
+    const key = `${event.date}|${event.start_time || ""}|${event.end_time || ""}`;
+    if (archiveTimes.has(key)) return archiveTimes.get(key);
+    const day = calendarDate(event.date);
+    if (!day) return NaN;
+    let end = null;
+    if (/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(event.end_time || "") &&
+        (!event.start_time || event.end_time > event.start_time)) {
+      const [hour, minute] = event.end_time.split(":").map(Number);
+      end = instantForWallTime(day.getTime() + hour * HOUR + minute * 60000);
+    }
+    // Untimed or invalid legacy schedules keep next-day archival; do not guess.
+    const cutoff = end === null
+      ? instantForWallTime(day.getTime() + 24 * HOUR)
+      : end + HOUR;
+    archiveTimes.set(key, cutoff);
+    return cutoff;
   }
 
   function formatDate(value) {
@@ -66,16 +104,40 @@
     return event.end_time ? `${event.start_time}–${event.end_time}` : event.start_time;
   }
 
-  function isUpcoming(event, today = zurichToday()) {
-    return event.date >= today;
+  function isUpcoming(event, now = new Date()) {
+    return new Date(now).getTime() < archiveAt(event);
   }
 
-  function groupEvents(events, today = zurichToday()) {
+  function groupEvents(events, now = new Date()) {
     const ascending = (a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id);
     return {
-      upcoming: events.filter(event => isUpcoming(event, today)).sort(ascending),
-      past: events.filter(event => !isUpcoming(event, today)).sort((a, b) => ascending(b, a))
+      upcoming: events.filter(event => isUpcoming(event, now)).sort(ascending),
+      past: events.filter(event => !isUpcoming(event, now)).sort((a, b) => ascending(b, a))
     };
+  }
+
+  function watchArchiving(events, render) {
+    let signature = null;
+    let timer;
+    const refresh = () => {
+      clearTimeout(timer);
+      const now = new Date();
+      const nextSignature = events.map(event => isUpcoming(event, now) ? "1" : "0").join("");
+      if (nextSignature !== signature) {
+        signature = nextSignature;
+        const focusedHref = content.contains(document.activeElement)
+          ? document.activeElement.getAttribute("href") : null;
+        render(now);
+        if (focusedHref) [...content.querySelectorAll("a[href]")]
+          .find(node => node.getAttribute("href") === focusedHref)?.focus({ preventScroll: true });
+      }
+      const next = Math.min(...events.map(archiveAt).filter(time => time > now.getTime()));
+      if (Number.isFinite(next)) timer = setTimeout(refresh, Math.max(1, Math.min(next - now.getTime(), 60000)));
+    };
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    refresh();
   }
 
   function element(tag, className, value) {
@@ -156,6 +218,21 @@
     return section;
   }
 
+  function renderArchive(events, failureCount, now) {
+    const groups = groupEvents(events, now);
+    document.title = SERIES;
+    content.replaceChildren();
+    if (failureCount) {
+      const notice = element("p", "notice", "Some talks could not be loaded. The available talks are shown below. Please try again later for the complete archive.");
+      notice.setAttribute("role", "status");
+      content.append(notice);
+    }
+    content.append(
+      archiveSection("Upcoming Talks", groups.upcoming, "No upcoming talks have been announced.", "upcoming"),
+      archiveSection("Past Talks", groups.past, "No past talks have been added yet.", "past")
+    );
+  }
+
   async function showArchive() {
     showLoading("Loading talks…");
     try {
@@ -174,21 +251,61 @@
         }
       }
       if (!events.length && failureCount) throw new Error("No listed seminars could be loaded");
-      const groups = groupEvents(events);
-      document.title = SERIES;
-      content.replaceChildren();
-      if (failureCount) {
-        const notice = element("p", "notice", "Some talks could not be loaded. The available talks are shown below. Please try again later for the complete archive.");
-        notice.setAttribute("role", "status");
-        content.append(notice);
-      }
-      content.append(
-        archiveSection("Upcoming Talks", groups.upcoming, "No upcoming talks have been announced.", "upcoming"),
-        archiveSection("Past Talks", groups.past, "No past talks have been added yet.", "past")
-      );
+      watchArchiving(events, now => renderArchive(events, failureCount, now));
     } catch (error) {
       console.warn("The talk archive could not be loaded.", error);
       showError("Talks unavailable", "We couldn’t load the talk archive. Please refresh the page or try again later.");
+    }
+  }
+
+  function renderDetail(event, now) {
+    document.title = event.date;
+    const upcoming = isUpcoming(event, now);
+    document.querySelector(".timezone-note").hidden = !upcoming;
+    const article = element("article", "seminar-detail");
+    const dateLine = element("p", "detail-date");
+    const date = element("time", "", formatDate(event.date));
+    date.dateTime = event.date;
+    dateLine.append(date);
+    if (upcoming) {
+      const time = formatTime(event);
+      if (time) dateLine.append(document.createTextNode(` · ${time}`));
+    }
+    article.append(dateLine, element("h2", "detail-title", event.title), element("p", "detail-speaker", event.speaker));
+    if (event.affiliation) article.append(element("p", "detail-affiliation", event.affiliation));
+    if (upcoming && event.location) article.append(element("p", "detail-meta", `Location: ${event.location}`));
+    if (event.abstract) {
+      const abstract = element("section", "abstract");
+      const body = element("div", "abstract-body");
+      body.append(element("p", "", event.abstract));
+      abstract.append(element("h3", "", "Abstract"), body);
+      article.append(abstract);
+    }
+    if (upcoming && event.bio) {
+      const bio = element("section", "speaker-bio");
+      bio.append(element("h3", "", "About the speaker"));
+      for (const paragraph of event.bio.split(/\r\n|[\r\n\u2028\u2029]/).map(text).filter(Boolean)) {
+        bio.append(element("p", "", paragraph));
+      }
+      article.append(bio);
+    }
+    content.replaceChildren(link("← All talks", "./", "back-link"), article);
+    if (upcoming) {
+      import("./rsvp.js").then(({ createRsvpControl }) => {
+        if (!article.isConnected) return;
+        article.insertBefore(createRsvpControl(event.id), article.querySelector(".abstract") || article.querySelector(".speaker-bio"));
+      }).catch(error => {
+        console.warn("RSVP is unavailable.", error);
+        if (article.isConnected) article.append(element("p", "notice", "RSVP is temporarily unavailable."));
+      });
+    }
+    // Every abstract follows the same pipeline: original JSON -> safe text DOM
+    // -> display-only TeX preparation -> scoped formula rendering (or raw text).
+    if (event.abstract) {
+      const body = article.querySelector(".abstract-body");
+      import("./math.js")
+        .then(({ renderAbstract }) => renderAbstract(body, event.abstract))
+        .catch(error => console.warn("Formula rendering is unavailable; showing the original abstract.", error));
     }
   }
 
@@ -200,54 +317,7 @@
     }
     try {
       const event = await loadEvent(id);
-      document.title = event.date;
-      const upcoming = isUpcoming(event);
-      document.querySelector(".timezone-note").hidden = !upcoming;
-      const article = element("article", "seminar-detail");
-      const dateLine = element("p", "detail-date");
-      const date = element("time", "", formatDate(event.date));
-      date.dateTime = event.date;
-      dateLine.append(date);
-      if (upcoming) {
-        const time = formatTime(event);
-        if (time) dateLine.append(document.createTextNode(` · ${time}`));
-      }
-      article.append(dateLine, element("h2", "detail-title", event.title), element("p", "detail-speaker", event.speaker));
-      if (event.affiliation) article.append(element("p", "detail-affiliation", event.affiliation));
-      if (upcoming && event.location) article.append(element("p", "detail-meta", `Location: ${event.location}`));
-      if (event.abstract) {
-        const abstract = element("section", "abstract");
-        const body = element("div", "abstract-body");
-        body.append(element("p", "", event.abstract));
-        abstract.append(element("h3", "", "Abstract"), body);
-        article.append(abstract);
-      }
-      if (upcoming && event.bio) {
-        const bio = element("section", "speaker-bio");
-        bio.append(element("h3", "", "About the speaker"));
-        for (const paragraph of event.bio.split(/\r\n|[\r\n\u2028\u2029]/).map(text).filter(Boolean)) {
-          bio.append(element("p", "", paragraph));
-        }
-        article.append(bio);
-      }
-      content.replaceChildren(link("← All talks", "./", "back-link"), article);
-      if (upcoming) {
-        import("./rsvp.js").then(({ createRsvpControl }) => {
-          if (!article.isConnected) return;
-          article.insertBefore(createRsvpControl(event.id), article.querySelector(".abstract") || article.querySelector(".speaker-bio"));
-        }).catch(error => {
-          console.warn("RSVP is unavailable.", error);
-          if (article.isConnected) article.append(element("p", "notice", "RSVP is temporarily unavailable."));
-        });
-      }
-      // Every abstract follows the same pipeline: original JSON -> safe text DOM
-      // -> display-only TeX preparation -> scoped formula rendering (or raw text).
-      if (event.abstract) {
-        const body = article.querySelector(".abstract-body");
-        import("./math.js")
-          .then(({ renderAbstract }) => renderAbstract(body, event.abstract))
-          .catch(error => console.warn("Formula rendering is unavailable; showing the original abstract.", error));
-      }
+      watchArchiving([event], now => renderDetail(event, now));
     } catch (error) {
       console.warn("The seminar could not be loaded.", error);
       if (error.status === 404) showError("Talk not found", "This talk may not have been added yet. Please check the archive for available talks.", true);
