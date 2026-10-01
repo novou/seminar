@@ -291,7 +291,7 @@
     }
     content.replaceChildren(link("← All talks", "./", "back-link"), article);
     if (upcoming) {
-      import("./rsvp.js?v=20261001-1").then(({ createRsvpControl }) => {
+      import("./rsvp.js?v=20261001-2").then(({ createRsvpControl }) => {
         if (!article.isConnected) return;
         article.insertBefore(createRsvpControl(event.id), article.querySelector(".abstract") || article.querySelector(".speaker-bio"));
       }).catch(error => {
