@@ -1,4 +1,4 @@
-import { RSVP_ENDPOINT } from "./rsvp-config.js";
+import { RSVP_ENDPOINT } from "./rsvp-config.js?v=20261001-1";
 
 const CLIENT_KEY = "seminar-client-id";
 const STATE_PREFIX = "seminar-rsvp-";
